@@ -1,64 +1,67 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Frash app laravel
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicação limpa para desenvolvimento livre utilizando Laravel 9 com Jetstream Inertia, utiliza o laravel mix para compilar os assets ao invés do vite. Contém também um Dockerfile configurado para trabalhar com PHP v8.1, NodeJS v18.6.0, versão atual do Composer, versão atual do Nginx, Mysql v8 e Php MyAdmin. Stacks configuradas em containers, integradas pelo arquivo docker-compose.yml.
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Configuração
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+# Clonar o repositório
+$ git clone git@github.com:jessicaosouza/laravel9-fresh-app.git
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Entrar na pasta do repositório clonado
+$ cd laravel9-fresh-app
 
-## Learning Laravel
+# Subir o container do docker
+$ docker-compose up -d
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# Instalar dependencias do projeto 
+$ docker-compose exec app composer install
+$ docker-compose exec app npm install
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Criar o arquivo de variáveis ambiente
+$ cp .env.development .env
 
-## Laravel Sponsors
+```
+Em seguida, vamos configurar as variáveis de acesso ao banco de dados no arquivo .env com as configurações de conexão disponibilizadas no arquivo docker-compose.yml
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```shell
+DB_CONNECTION=mysql
+DB_HOST=treinamentodb #nome do container (container_name)
+DB_PORT=3306
+DB_DATABASE=treinamento #MYSQL_DATABASE
+DB_USERNAME=user #MYSQL_USER
+DB_PASSWORD=root #MYSQL_PASSWORD
+```
+> ⚠️ Sempre que alterarmos o arquivo .env devemos atualizar o cache do app.
 
-### Premium Partners
+```bash
+# Adicionar novas configurações no cache
+$ docker-compose exec app php artisan config:cache
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+# Criar e popular o banco de dados
+$ docker-compose exec app php artisan migrate:fresh --seed
+```
 
-## Contributing
+💡 Usamos o comando docker-compose exec app para executar comandos nos containers, para diminuir o tamanho dos comandos, podemos criar um aliás para `docker-compose exec app`. Segue uma dica de como fazer caso esteja utilizando `oh my zsh`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# Abrir o arquivo de configuração com seu editor preferido, eu gosto do nano
+$ nano ~/.zshrc
+```
 
-## Security Vulnerabilities
+Ao final do arquivo, criar um alias, chamei meu atalho de `doit`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```shell
+alias doit='docker-compose exec app'
+```
 
-## License
+Após adicionar a linha ao final do arquivo, salvar e fechar. Finalmente, devemos atualizar as configurações do terminal:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+$ source ~/.zshrc
+```
+
+
