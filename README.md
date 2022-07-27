@@ -65,3 +65,8 @@ $ source ~/.zshrc
 ```
 
 
+## Referencias
+
+Para desenvolver utilizando containers do docker e integrá-los eu segui os vídeos da [Erika Heidi](https://github.com/erikaheidi) ⭐️.
+
+
