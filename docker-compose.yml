@@ -1,0 +1,62 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: usuario
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: treinamento
+    container_name: treinamento-app
+    environment:
+      PHP_POST_MAX_SIZE: 256M
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - nettreinamento
+
+  db:
+    image: mysql:8.0
+    container_name: treinamentodb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: treinamento
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: user
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - nettreinamento
+
+  nginx:
+    image: nginx:alpine
+    container_name: treinamento-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - nettreinamento
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: unless-stopped
+    container_name: treinamento-phpmyadmin
+    links:
+      - db
+    ports:
+      - 81:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - nettreinamento
+
+networks:
+  nettreinamento:
+    driver: bridge
